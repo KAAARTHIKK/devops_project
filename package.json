@@ -1,0 +1,25 @@
+{
+  "name": "devops_project",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KAAARTHIKK/devops_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KAAARTHIKK/devops_project/issues"
+  },
+  "homepage": "https://github.com/KAAARTHIKK/devops_project#readme",
+  "description": "Task Management REST API - DevOps Project",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
