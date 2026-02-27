@@ -10,10 +10,10 @@ The application allows users to create, retrieve, update, and delete tasks throu
 
 ## Team Members
 
-- Member 1 – Backend Development  
-- Member 2 – Docker Containerization  
-- Member 3 – Jenkins CI/CD Pipeline  
-- Member 4 – AWS EC2 Deployment  
+- Darun Kumar M M – Backend Development  
+- Akshata Ramgopal – Docker Containerization  
+- Karthik Saravanan – Jenkins CI/CD Pipeline  
+- Lokesh Kumar G R – AWS EC2 Deployment  
 
 ---
 
