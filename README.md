@@ -12,8 +12,8 @@ The application allows users to create, retrieve, update, and delete tasks throu
 
 - Darun Kumar M M – Backend Development  
 - Akshata Ramgopal – Docker Containerization  
-- Karthik Saravanan – Jenkins CI/CD Pipeline  
-- Lokesh Kumar G R – AWS EC2 Deployment  
+- Lokesh Kumar G R – Jenkins CI/CD Pipeline  
+- Karthik Saravanan – AWS EC2 Deployment  
 
 ---
 
