@@ -1,33 +1,39 @@
-Task Management Application – DevOps Project
-Overview
+# Task Management REST API – DevOps Project
 
-This project is a full-stack Task Management Application built using Node.js and Express. It demonstrates complete DevOps implementation including structured Git workflow, Docker containerization, CI/CD automation using Jenkins, Docker image publishing, and deployment on AWS EC2.
+## Overview
 
-The application allows users to create, view, update, and delete tasks through a REST API and a simple frontend interface.
+This project is a full-stack Task Management application built using Node.js and Express. It demonstrates complete DevOps implementation including structured Git workflow, Docker containerization, Jenkins CI/CD automation, DockerHub image publishing, and deployment on AWS EC2.
 
-Technology Stack
+The application allows users to create, retrieve, update, and delete tasks through a REST API and a simple frontend interface.
 
-Runtime: Node.js
+---
 
-Framework: Express.js
+## Team Members
 
-Frontend: HTML, CSS, JavaScript (served from public/)
+- Member 1 – Backend Development  
+- Member 2 – Docker Containerization  
+- Member 3 – Jenkins CI/CD Pipeline  
+- Member 4 – AWS EC2 Deployment  
 
-Storage: In-memory array
+---
 
-Containerization: Docker
+## Technology Stack
 
-CI/CD: Jenkins
+- Runtime: Node.js  
+- Framework: Express.js  
+- Frontend: HTML, CSS, JavaScript (served from `public/`)  
+- Storage: In-memory array  
+- Containerization: Docker  
+- CI/CD: Jenkins  
+- Container Registry: DockerHub  
+- Cloud Platform: AWS EC2  
+- Default Port: 3000  
 
-Container Registry: DockerHub
+---
 
-Cloud Deployment: AWS EC2
+## Project Structure
 
-Version Control: Git & GitHub
-
-Default Port: 3000
-
-Project Structure
+```
 devops_project/
 │
 ├── app.js
@@ -40,156 +46,187 @@ devops_project/
 ├── TESTING.md
 ├── README.md
 └── .gitignore
-Application Architecture
+```
 
-Frontend → Express Backend → In-memory Storage
-Jenkins → Docker Build → DockerHub → AWS EC2 Deployment
+---
 
-The frontend is served using Express static middleware.
-The backend exposes REST API endpoints under /tasks.
-The Docker image is built automatically through Jenkins and deployed to AWS EC2.
+## Application Architecture
 
-API Endpoints
-Create Task
+Frontend → Express Backend → In-Memory Storage  
+Jenkins → Docker Build → DockerHub → AWS EC2 Deployment  
 
-POST /tasks
+The frontend is served using Express static middleware.  
+The backend exposes REST API endpoints under `/tasks`.
+
+---
+
+## API Endpoints
+
+### Create Task
+Endpoint: POST /tasks  
 
 Request Body:
-
+```json
 {
   "title": "Task title"
 }
+```
 
 Response:
-
+```json
 {
   "id": 1,
   "title": "Task title",
   "completed": false
 }
-Get All Tasks
+```
 
-GET /tasks
+---
 
-Update Task
+### Get All Tasks
+Endpoint: GET /tasks  
 
-PUT /tasks/:id
+---
 
-Delete Task
+### Update Task
+Endpoint: PUT /tasks/:id  
 
-DELETE /tasks/:id
+---
 
-Running the Application Locally
-Prerequisites
+### Delete Task
+Endpoint: DELETE /tasks/:id  
 
-Node.js (v14 or higher)
+---
 
-npm
+## Running the Application Locally
 
-Git
+### Prerequisites
 
-Installation
+- Node.js (v14 or higher)  
+- npm  
+- Git  
+
+### Installation
+
+```bash
 git clone https://github.com/<your-username>/devops_project.git
 cd devops_project
 npm install
 npm start
+```
 
 Application URLs:
 
 Frontend:
-
 http://localhost:3000/
 
 API:
-
 http://localhost:3000/tasks
-Docker Implementation
-Build Docker Image
-docker build -t task-api .
-Run Docker Container
-docker run -d -p 3000:3000 task-api
-DockerHub Integration
 
-The Docker image is automatically built and pushed to DockerHub via Jenkins pipeline.
+---
+
+## Docker Implementation
+
+### Build Docker Image
+
+```bash
+docker build -t task-api .
+```
+
+### Run Docker Container
+
+```bash
+docker run -d -p 3000:3000 task-api
+```
+
+Access:
+http://localhost:3000
+
+Stop container:
+
+```bash
+docker ps
+docker stop <container-id>
+```
+
+---
+
+## DockerHub Integration
 
 Manual push (if required):
 
+```bash
 docker tag task-api <dockerhub-username>/task-api
 docker push <dockerhub-username>/task-api
-Jenkins CI/CD Pipeline
+```
 
-The Jenkins pipeline consists of the following stages:
+---
 
-Clone Repository
+## Jenkins CI/CD Pipeline
 
-Install Dependencies
+Pipeline Stages:
 
-Build Application
+1. Clone Repository  
+2. Install Dependencies  
+3. Build Application  
+4. Build Docker Image  
+5. Push Docker Image to DockerHub  
+6. Deploy to AWS EC2  
 
-Build Docker Image
+Pipeline configuration is defined in `Jenkinsfile`.
 
-Push Docker Image to DockerHub
+---
 
-Deploy to AWS EC2 (via SSH)
+## AWS EC2 Deployment
 
-Pipeline is defined in Jenkinsfile.
+Deployment Steps:
 
-The pipeline ensures that every push to the repository triggers automatic build and deployment.
+1. Launch EC2 instance  
+2. Install Docker  
+3. Pull image from DockerHub  
+4. Run container  
 
-AWS EC2 Deployment
-
-Deployment is performed on an AWS EC2 instance.
-
-Steps:
-
-Launch EC2 instance (Amazon Linux / Ubuntu)
-
-Install Docker
-
-Pull Docker image from DockerHub
-
-Run container on port 3000
-
-Application is accessible via:
+Application URL:
 
 http://<EC2-Public-IP>:3000
-Git Workflow
-Branch Strategy
 
-main: Production-ready code
+---
 
-dev: Development branch
+## Git Workflow
 
-feature/*: Feature branches
+### Branch Strategy
 
-All code promotion to main is done through Pull Requests.
+- main – Production-ready  
+- dev – Development branch  
+- feature/* – Feature branches  
 
-DevOps Implementation Summary
+### Feature Development
 
-User stories defined
+```bash
+git checkout dev
+git checkout -b feature/<feature-name>
+git add .
+git commit -m "Descriptive commit message"
+git push origin feature/<feature-name>
+```
 
-Structured Git workflow implemented
+Pull Request Flow:
 
-Pull request-based promotion enforced
+feature/<feature-name> → dev → main
 
-Docker containerization completed
+---
 
-Jenkins CI pipeline implemented
+## DevOps Implementation Summary
 
-DockerHub image publishing completed
+- User stories defined  
+- Git workflow implemented  
+- Docker containerization completed  
+- Jenkins CI pipeline implemented  
+- Docker image pushed to DockerHub  
+- Application deployed to AWS EC2  
 
-AWS EC2 deployment completed
+---
 
-Future Improvements
-
-Add persistent database (MongoDB / PostgreSQL)
-
-Implement authentication and authorization
-
-Add automated unit and integration tests
-
-Implement monitoring and logging (Prometheus / Grafana)
-
-License
+## License
 
 ISC
