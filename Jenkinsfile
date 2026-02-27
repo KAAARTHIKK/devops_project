@@ -16,13 +16,12 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
-            steps {
-                echo '📦 Installing Node.js dependencies...'
-                sh 'npm install'
-            }
-        }
-        
+	stage('Install Dependencies') {
+    		steps {
+        		echo '📦 Skipping npm install - will be done in Docker build...'
+        		sh 'echo "Dependencies will be installed during Docker build"'
+    		}
+	}        
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
