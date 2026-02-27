@@ -1,165 +1,232 @@
-# Task Management REST API - DevOps Project
+# Task Management REST API – DevOps Project
 
-A simple Task Management REST API built with Node.js and Express for demonstrating DevOps practices including Git workflow, Docker containerization, and CI/CD pipeline.
+## Overview
+
+This project is a full-stack Task Management application built using Node.js and Express. It demonstrates complete DevOps implementation including structured Git workflow, Docker containerization, Jenkins CI/CD automation, DockerHub image publishing, and deployment on AWS EC2.
+
+The application allows users to create, retrieve, update, and delete tasks through a REST API and a simple frontend interface.
+
+---
 
 ## Team Members
-- Member 1
-- Member 2
-- Member 3
-- Member 4
+
+- Darun Kumar M M – Backend Development  
+- Akshata Ramgopal – Docker Containerization  
+- Karthik Saravanan – Jenkins CI/CD Pipeline  
+- Lokesh Kumar G R – AWS EC2 Deployment  
+
+---
 
 ## Technology Stack
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Storage:** In-memory (array)
-- **Port:** 3000
+
+- Runtime: Node.js  
+- Framework: Express.js  
+- Frontend: HTML, CSS, JavaScript (served from `public/`)  
+- Storage: In-memory array  
+- Containerization: Docker  
+- CI/CD: Jenkins  
+- Container Registry: DockerHub  
+- Cloud Platform: AWS EC2  
+- Default Port: 3000  
+
+---
 
 ## Project Structure
+
 ```
 devops_project/
-├── app.js              # Main application file
-├── package.json        # Node.js dependencies
-├── .gitignore         # Git ignore rules
-├── USER_STORIES.md    # User stories documentation
-└── README.md          # Project documentation
+│
+├── app.js
+├── package.json
+├── package-lock.json
+├── Dockerfile
+├── Jenkinsfile
+├── public/
+├── USER_STORIES.md
+├── TESTING.md
+├── README.md
+└── .gitignore
 ```
+
+---
+
+## Application Architecture
+
+Frontend → Express Backend → In-Memory Storage  
+Jenkins → Docker Build → DockerHub → AWS EC2 Deployment  
+
+The frontend is served using Express static middleware.  
+The backend exposes REST API endpoints under `/tasks`.
+
+---
 
 ## API Endpoints
 
-### 1. Create Task
-- **Endpoint:** `POST /tasks`
-- **Body:** `{ "title": "Task title" }`
-- **Response:** `{ "id": 1, "title": "Task title", "completed": false }`
+### Create Task
+Endpoint: POST /tasks  
 
-### 2. Get All Tasks
-- **Endpoint:** `GET /tasks`
-- **Response:** `[{ "id": 1, "title": "Task title", "completed": false }]`
+Request Body:
+```json
+{
+  "title": "Task title"
+}
+```
 
-### 3. Update Task
-- **Endpoint:** `PUT /tasks/:id`
-- **Body:** `{ "title": "Updated title", "completed": true }`
-- **Response:** `{ "id": 1, "title": "Updated title", "completed": true }`
+Response:
+```json
+{
+  "id": 1,
+  "title": "Task title",
+  "completed": false
+}
+```
 
-### 4. Delete Task
-- **Endpoint:** `DELETE /tasks/:id`
-- **Response:** `{ "message": "Task deleted successfully" }`
+---
 
-## Setup Instructions
+### Get All Tasks
+Endpoint: GET /tasks  
+
+---
+
+### Update Task
+Endpoint: PUT /tasks/:id  
+
+---
+
+### Delete Task
+Endpoint: DELETE /tasks/:id  
+
+---
+
+## Running the Application Locally
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm
-- Git
+
+- Node.js (v14 or higher)  
+- npm  
+- Git  
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/KAAARTHIKK/devops_project.git
+git clone https://github.com/<your-username>/devops_project.git
 cd devops_project
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Run the application:
-```bash
 npm start
 ```
 
-The API will be available at `http://localhost:3000`
+Application URLs:
 
-## Testing the API
+Frontend:
+http://localhost:3000/
 
-### Using cURL
-
-**Create a task:**
-```bash
-curl -X POST http://localhost:3000/tasks -H "Content-Type: application/json" -d "{\"title\":\"Learn DevOps\"}"
-```
-
-**Get all tasks:**
-```bash
-curl http://localhost:3000/tasks
-```
-
-**Update a task:**
-```bash
-curl -X PUT http://localhost:3000/tasks/1 -H "Content-Type: application/json" -d "{\"completed\":true}"
-```
-
-**Delete a task:**
-```bash
-curl -X DELETE http://localhost:3000/tasks/1
-```
-
-### Using Postman
-
-1. Open Postman
-2. Create a new request
-3. Set the method (GET, POST, PUT, DELETE)
-4. Enter URL: `http://localhost:3000/tasks`
-5. For POST/PUT, add JSON body in the Body tab (select raw → JSON)
-6. Click Send
-
-### Using Browser (GET only)
-
-Open browser and navigate to:
-```
+API:
 http://localhost:3000/tasks
+
+---
+
+## Docker Implementation
+
+### Build Docker Image
+
+```bash
+docker build -t task-api .
 ```
+
+### Run Docker Container
+
+```bash
+docker run -d -p 3000:3000 task-api
+```
+
+Access:
+http://localhost:3000
+
+Stop container:
+
+```bash
+docker ps
+docker stop <container-id>
+```
+
+---
+
+## DockerHub Integration
+
+Manual push (if required):
+
+```bash
+docker tag task-api <dockerhub-username>/task-api
+docker push <dockerhub-username>/task-api
+```
+
+---
+
+## Jenkins CI/CD Pipeline
+
+Pipeline Stages:
+
+1. Clone Repository  
+2. Install Dependencies  
+3. Build Application  
+4. Build Docker Image  
+5. Push Docker Image to DockerHub  
+6. Deploy to AWS EC2  
+
+Pipeline configuration is defined in `Jenkinsfile`.
+
+---
+
+## AWS EC2 Deployment
+
+Deployment Steps:
+
+1. Launch EC2 instance  
+2. Install Docker  
+3. Pull image from DockerHub  
+4. Run container  
+
+Application URL:
+
+http://<EC2-Public-IP>:3000
+
+---
 
 ## Git Workflow
 
 ### Branch Strategy
-- **main:** Production-ready code
-- **dev:** Development branch
-- **feature/*:** Feature branches
 
-### Creating a Feature Branch
+- main – Production-ready  
+- dev – Development branch  
+- feature/* – Feature branches  
 
-1. Switch to dev branch:
+### Feature Development
+
 ```bash
 git checkout dev
-```
-
-2. Create feature branch:
-```bash
-git checkout -b feature/task-api
-```
-
-3. Make changes and commit:
-```bash
+git checkout -b feature/<feature-name>
 git add .
-git commit -m "Add Task Management API implementation"
+git commit -m "Descriptive commit message"
+git push origin feature/<feature-name>
 ```
 
-4. Push to GitHub:
-```bash
-git push origin feature/task-api
-```
+Pull Request Flow:
 
-5. Create Pull Request on GitHub:
-   - Go to repository on GitHub
-   - Click "Compare & pull request"
-   - Set base: `dev` ← compare: `feature/task-api`
-   - Add description and create PR
-   - Request review from team member
-   - Merge after approval
+feature/<feature-name> → dev → main
 
-## User Stories
+---
 
-See [USER_STORIES.md](USER_STORIES.md) for detailed user stories.
+## DevOps Implementation Summary
 
-## Future Enhancements
-- [ ] Add Docker containerization
-- [ ] Implement Jenkins CI/CD pipeline
-- [ ] Add unit tests
-- [ ] Deploy to AWS EC2
-- [ ] Add database integration
-- [ ] Implement authentication
+- User stories defined  
+- Git workflow implemented  
+- Docker containerization completed  
+- Jenkins CI pipeline implemented  
+- Docker image pushed to DockerHub  
+- Application deployed to AWS EC2  
+
+---
 
 ## License
+
 ISC

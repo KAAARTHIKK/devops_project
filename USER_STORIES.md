@@ -1,131 +1,233 @@
-# User Stories
+# User Stories – Task Management DevOps Project
 
-## Functional User Stories
+## Project Context
 
-### US-1: Create Task
-**As a** user,  
-**I should** be able to create a new task with a title and description,  
-**so that** I can keep track of things I need to do.
+This project implements a Task Management application with a frontend interface, REST API backend, Docker containerization, CI/CD automation using Jenkins, and deployment on AWS EC2.
 
-**Acceptance Criteria:**
+The following user stories capture both functional requirements and DevOps implementation requirements.
+
+---
+
+# Functional User Stories
+
+---
+
+## US-1: Create Task
+
+**As a user**,  
+I want to create a new task with a title and description,  
+so that I can manage and track my work items.
+
+### Acceptance Criteria
+
 - API endpoint: `POST /tasks`
-- Request body includes `title` and `description`
-- Returns created task with unique ID and timestamp
+- Request body must include:
+  - `title`
+  - `description`
+- A unique ID is generated automatically
+- A timestamp is recorded
+- Task is stored in memory
+- API returns the created task object
+- Proper error returned if required fields are missing
 
 ---
 
-### US-2: View All Tasks
-**As a** user,  
-**I should** be able to view all my tasks,  
-**so that** I can see what needs to be done.
+## US-2: View All Tasks
 
-**Acceptance Criteria:**
+**As a user**,  
+I want to view all created tasks,  
+so that I can see what needs to be completed.
+
+### Acceptance Criteria
+
 - API endpoint: `GET /tasks`
-- Returns array of all tasks
-- Each task includes ID, title, description, and timestamp
+- Returns an array of tasks
+- Each task includes:
+  - `id`
+  - `title`
+  - `description`
+  - `timestamp`
+- Returns empty array if no tasks exist
 
 ---
 
-### US-3: Update Task
-**As a** user,  
-**I should** be able to update an existing task,  
-**so that** I can modify task details as requirements change.
+## US-3: Update Task
 
-**Acceptance Criteria:**
+**As a user**,  
+I want to update an existing task,  
+so that I can modify its details when necessary.
+
+### Acceptance Criteria
+
 - API endpoint: `PUT /tasks/:id`
-- Request body includes updated `title` and/or `description`
-- Returns updated task details
+- Allows updating:
+  - `title`
+  - `description`
+- Updated task replaces old data in memory
+- API returns updated task object
+- Returns appropriate error if task ID is invalid
 
 ---
 
-### US-4: Delete Task
-**As a** user,  
-**I should** be able to delete a task,  
-**so that** I can remove completed or unnecessary tasks.
+## US-4: Delete Task
 
-**Acceptance Criteria:**
+**As a user**,  
+I want to delete a task,  
+so that I can remove completed or unnecessary items.
+
+### Acceptance Criteria
+
 - API endpoint: `DELETE /tasks/:id`
-- Removes task from the system
-- Returns success confirmation
+- Task is removed from in-memory storage
+- Returns success confirmation message
+- Returns error if task ID does not exist
 
 ---
 
-## DevOps User Stories
+## US-5: Frontend Interaction
 
-### US-5: Version Control Setup
-**As a** developer,  
-**I should** have a GitHub repository with proper branching strategy,  
-**so that** the team can collaborate effectively without code conflicts.
+**As a user**,  
+I want a simple web interface to interact with the API,  
+so that I can manage tasks without using external tools.
 
-**Acceptance Criteria:**
-- Repository created with main branch
-- Branch protection rules configured
-- All team members have access
-- README.md with project documentation
+### Acceptance Criteria
+
+- Frontend served from `public/` directory
+- User can:
+  - Create tasks
+  - View tasks
+  - Delete tasks
+- Frontend communicates with backend using REST API
+- UI loads correctly on `http://localhost:3000`
 
 ---
 
-### US-6: Dockerization
-**As a** DevOps engineer,  
-**I should** containerize the application using Docker,  
-**so that** it runs consistently across different environments.
+# DevOps User Stories
 
-**Acceptance Criteria:**
-- Dockerfile created for Node.js application
+---
+
+## US-6: Git Repository and Branching Strategy
+
+**As a developer**,  
+I want a properly structured Git repository with branch protection,  
+so that the team can collaborate efficiently.
+
+### Acceptance Criteria
+
+- GitHub repository created
+- Branches:
+  - `main` (production)
+  - `dev` (development)
+  - `feature/*` (feature branches)
+- Pull requests required for merging into `dev` and `main`
+- Proper commit history maintained
+- `.gitignore` file configured
+- `README.md` and documentation added
+
+---
+
+## US-7: Docker Containerization
+
+**As a DevOps engineer**,  
+I want the application containerized using Docker,  
+so that it runs consistently across environments.
+
+### Acceptance Criteria
+
+- `Dockerfile` created
 - Docker image builds successfully
-- Container runs application on specified port
-- docker-compose.yml for easy deployment
+- Application runs using:
+  ```
+  docker run -p 3000:3000 task-api
+  ```
+- Application accessible on port 3000
+- `.dockerignore` file included
 
 ---
 
-### US-7: CI/CD Pipeline
-**As a** DevOps engineer,  
-**I should** set up a Jenkins CI/CD pipeline,  
-**so that** code changes are automatically tested and deployed.
+## US-8: Continuous Integration Pipeline
 
-**Acceptance Criteria:**
-- Jenkinsfile configured in repository
+**As a DevOps engineer**,  
+I want a Jenkins pipeline configured,  
+so that code changes are automatically built and packaged.
+
+### Acceptance Criteria
+
+- `Jenkinsfile` present in repository
+- Pipeline stages include:
+  - Clone repository
+  - Install dependencies
+  - Build application
+  - Build Docker image
+  - Push Docker image to DockerHub
 - Pipeline triggers on code push
-- Automated build and Docker image creation
+- Build fails if any stage fails
 - Pipeline status visible in Jenkins dashboard
 
 ---
 
-### US-8: Automated Testing
-**As a** developer,  
-**I should** have automated tests in the CI pipeline,  
-**so that** bugs are caught before deployment.
+## US-9: DockerHub Integration
 
-**Acceptance Criteria:**
-- Unit tests for API endpoints
-- Tests run automatically in Jenkins pipeline
-- Build fails if tests don't pass
-- Test coverage report generated
+**As a DevOps engineer**,  
+I want the Docker image pushed to DockerHub,  
+so that it can be deployed from a central registry.
+
+### Acceptance Criteria
+
+- DockerHub account configured
+- Image tagged correctly
+- Image pushed automatically via Jenkins
+- Image publicly accessible
 
 ---
 
-### US-9: Cloud Deployment (Optional)
-**As a** DevOps engineer,  
-**I should** deploy the application to AWS EC2,  
-**so that** it is accessible over the internet.
+## US-10: Cloud Deployment on AWS EC2
 
-**Acceptance Criteria:**
+**As a DevOps engineer**,  
+I want to deploy the containerized application on AWS EC2,  
+so that it is accessible over the internet.
+
+### Acceptance Criteria
+
 - EC2 instance provisioned
-- Application deployed and running
-- Security groups configured properly
-- Public URL accessible
+- Docker installed on EC2
+- Image pulled from DockerHub
+- Container running on port 3000
+- Security group allows inbound traffic on port 3000
+- Application accessible via public IP
 
 ---
 
-## Team Collaboration Stories
+# Collaboration & Quality Stories
 
-### US-10: Code Review Process
-**As a** team member,  
-**I should** follow a pull request workflow,  
-**so that** code quality is maintained through peer review.
+---
 
-**Acceptance Criteria:**
-- Feature branches created for new work
-- Pull requests required for merging to main
-- At least one team member reviews before merge
-- CI checks pass before merge allowed
+## US-11: Pull Request and Code Review Workflow
+
+**As a team member**,  
+I want all changes to go through pull requests,  
+so that code quality and collaboration standards are maintained.
+
+### Acceptance Criteria
+
+- All features developed in `feature/*` branches
+- Pull request required before merge
+- At least one review before merge
+- CI pipeline must pass before merging
+- Merge history visible in repository
+
+---
+
+# Summary
+
+This project successfully integrates:
+
+- Functional REST API development
+- Frontend integration
+- Git-based collaboration
+- Docker containerization
+- Jenkins CI/CD automation
+- DockerHub image management
+- AWS EC2 cloud deployment
+
+The user stories above define the complete scope of the project.
