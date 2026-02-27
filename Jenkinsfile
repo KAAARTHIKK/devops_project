@@ -41,7 +41,7 @@ pipeline {
             steps {
                 echo '📤 Pushing image to DockerHub...'
                 
-                withDockerRegistry(credentialsId: 'dockerhub', toolName: '') {
+                withDockerRegistry(credentialsId: 'dockerhub', url: '') {
                     sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     sh "docker push ${DOCKER_IMAGE}:latest"
                 }
@@ -66,3 +66,4 @@ pipeline {
         }
     }
 }
+
