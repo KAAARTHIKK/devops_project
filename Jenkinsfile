@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = "karthiksaravanan3/task-api"
         DOCKER_TAG = "${BUILD_NUMBER}"
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
     
     stages {
@@ -16,12 +15,13 @@ pipeline {
             }
         }
         
-	stage('Install Dependencies') {
-    		steps {
-        		echo '📦 Skipping npm install - will be done in Docker build...'
-        		sh 'echo "Dependencies will be installed during Docker build"'
-    		}
-	}        
+        stage('Install Dependencies') {
+            steps {
+                echo '📦 Skipping npm install - will be done in Docker build...'
+                sh 'echo "Dependencies will be installed during Docker build"'
+            }
+        }        
+
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
@@ -40,9 +40,11 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 echo '📤 Pushing image to DockerHub...'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                sh "docker push ${DOCKER_IMAGE}:latest"
+                
+                withDockerRegistry(credentialsId: 'dockerhub', toolName: '') {
+                    sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh "docker push ${DOCKER_IMAGE}:latest"
+                }
             }
         }
         
@@ -61,10 +63,6 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed. Check logs above.'
-        }
-        always {
-            echo '🔐 Logging out from DockerHub...'
-            sh 'docker logout'
         }
     }
 }
