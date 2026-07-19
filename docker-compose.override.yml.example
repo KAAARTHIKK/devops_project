@@ -1,0 +1,8 @@
+# Local-only override: exposes Redis on the host for debugging (redis-cli, RedisInsight, etc.)
+# Not loaded by default — copy it to enable:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+#   docker compose up
+# docker-compose.override.yml is gitignored so this stays a local-machine choice.
+services:
+  redis:
+    ports: ["6379:6379"]
