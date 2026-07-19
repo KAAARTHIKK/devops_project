@@ -6,6 +6,7 @@ const healthRouter = require('./routes/health');
 const keysRouter = require('./routes/keys');
 const proxyRouter = require('./routes/proxy');
 const analyticsRouter = require('./routes/analytics');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(healthRouter);
 app.use(keysRouter);
 app.use(proxyRouter);
 app.use(analyticsRouter);
+app.use(errorHandler);
 
 module.exports = app;

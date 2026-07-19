@@ -2,7 +2,6 @@ services:
   app:
     build: .
     image: karthiksaravanan3/task-api:latest
-    command: ["node", "src/server.js"]
     ports: ["3000:3000"]
     environment:
       - PORT=3000
