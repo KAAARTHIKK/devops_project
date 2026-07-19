@@ -34,7 +34,7 @@ pipeline {
                       --user \$(id -u):\$(id -g) \
                       -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 \
                       -v ${WORKSPACE}:/app -w /app \
-                      node:18 sh -c "npm ci && npm test"
+                      node:18 sh -c 'npm ci && npm test'
                 """
             }
             post {
