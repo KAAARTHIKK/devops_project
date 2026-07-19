@@ -25,7 +25,23 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                sh 'npm test || echo "No tests configured yet"'
+                sh "docker network create test-net-${BUILD_NUMBER}"
+                sh "docker run -d --name test-redis-${BUILD_NUMBER} --network test-net-${BUILD_NUMBER} redis:7-alpine"
+                sh "sleep 2"
+                sh """
+                    docker run --rm \
+                      --network test-net-${BUILD_NUMBER} \
+                      --user \$(id -u):\$(id -g) \
+                      -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 \
+                      -v ${WORKSPACE}:/app -w /app \
+                      node:18 sh -c "npm ci && npm test"
+                """
+            }
+            post {
+                always {
+                    sh "docker rm -f test-redis-${BUILD_NUMBER} || true"
+                    sh "docker network rm test-net-${BUILD_NUMBER} || true"
+                }
             }
         }
         
