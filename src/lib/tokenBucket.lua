@@ -27,7 +27,11 @@ redis.call('PEXPIRE', bucketKey, 3600000)
 
 local retryAfter = 0
 if allowed == 0 then
-  retryAfter = math.ceil((cost - tokens) / refillPerSec)
+  if refillPerSec > 0 then
+    retryAfter = math.ceil((cost - tokens) / refillPerSec)
+  else
+    retryAfter = -1 -- bucket never refills; caller should treat as "unknown"
+  end
 end
 
 return { allowed, math.floor(tokens), retryAfter }

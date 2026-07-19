@@ -21,19 +21,19 @@ module.exports = async function rateLimit(req, res, next) {
   }
 
   const { allowed, remaining, retryAfter } = result;
-  const reset = Math.ceil((capacity - remaining) / refillPerSec);
+  const reset = refillPerSec > 0 ? Math.ceil((capacity - remaining) / refillPerSec) : 0;
 
   res.set('X-RateLimit-Limit', String(capacity));
   res.set('X-RateLimit-Remaining', String(remaining));
   res.set('X-RateLimit-Reset', String(reset));
 
   if (!allowed) {
-    res.set('Retry-After', String(retryAfter));
+    if (retryAfter >= 0) res.set('Retry-After', String(retryAfter));
     req.log.warn({ keyId: id, retryAfter, remaining }, 'rate limit exceeded');
     return res.status(429).json({
       error: { code: 'RATE_LIMITED', message: 'rate limit exceeded' },
       requestId: req.id,
-      retryAfter,
+      ...(retryAfter >= 0 ? { retryAfter } : {}),
     });
   }
 
