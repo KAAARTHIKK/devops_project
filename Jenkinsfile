@@ -15,12 +15,6 @@ pipeline {
             }
         }
 
-        stage('Debug Checkout') {
-            steps {
-                sh 'pwd && git rev-parse HEAD && ls -la package-lock.json && cat .gitignore'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 echo '📦 Skipping npm install - will be done in Docker build...'
@@ -34,14 +28,7 @@ pipeline {
                 sh "docker network create test-net-${BUILD_NUMBER}"
                 sh "docker run -d --name test-redis-${BUILD_NUMBER} --network test-net-${BUILD_NUMBER} redis:7-alpine"
                 sh "sleep 2"
-                sh """
-                    docker run --rm \
-                      --network test-net-${BUILD_NUMBER} \
-                      --user \$(id -u):\$(id -g) \
-                      -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 \
-                      -v ${WORKSPACE}:/app -w /app \
-                      node:18 sh -c 'npm ci && npm test'
-                """
+                sh "set -x; docker run --rm --network test-net-${BUILD_NUMBER} --user \$(id -u):\$(id -g) -e HOME=/tmp -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 -v ${WORKSPACE}:/app -w /app node:18 sh /app/scripts/ci-test.sh"
             }
             post {
                 always {
