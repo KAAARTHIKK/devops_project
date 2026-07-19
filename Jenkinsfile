@@ -25,10 +25,15 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
+                // Preflight: prove what the workspace actually contains (shows in the build log).
+                sh "git -C ${WORKSPACE} rev-parse HEAD"
+                sh "ls -la ${WORKSPACE}/scripts/"
                 sh "docker network create test-net-${BUILD_NUMBER}"
                 sh "docker run -d --name test-redis-${BUILD_NUMBER} --network test-net-${BUILD_NUMBER} redis:7-alpine"
                 sh "sleep 2"
-                sh "set -x; docker run --rm --network test-net-${BUILD_NUMBER} --user \$(id -u):\$(id -g) -e HOME=/tmp -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 -v ${WORKSPACE}:/app -w /app node:18 sh /app/scripts/ci-test.sh"
+                // Feed the test script to the container via stdin (redirect resolved agent-side),
+                // so the run does not depend on the container seeing the bind-mounted script path.
+                sh "docker run --rm -i --network test-net-${BUILD_NUMBER} --user \$(id -u):\$(id -g) -e HOME=/tmp -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 -v ${WORKSPACE}:/app -w /app node:18 sh -s < ${WORKSPACE}/scripts/ci-test.sh"
             }
             post {
                 always {
