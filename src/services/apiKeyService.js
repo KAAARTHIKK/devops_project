@@ -75,4 +75,4 @@ async function revoke(id) {
   return { id, status: 'revoked' };
 }
 
-module.exports = { create, getById, list, revoke };
+module.exports = { create, getById, list, revoke, hashSecret };
