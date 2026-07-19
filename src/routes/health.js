@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { ping } = require('../lib/redis');
 
 const router = Router();
 
@@ -6,9 +7,13 @@ router.get('/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-router.get('/health/ready', (req, res) => {
-  // ponytail: stubbed 200 until Phase 3 wires the real Redis PING
-  res.json({ status: 'ready', redis: 'stub' });
+router.get('/health/ready', async (req, res) => {
+  const up = await ping();
+  if (up) {
+    res.json({ status: 'ready', redis: 'up' });
+  } else {
+    res.status(503).json({ status: 'not_ready', redis: 'down' });
+  }
 });
 
 module.exports = router;
