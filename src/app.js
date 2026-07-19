@@ -5,6 +5,7 @@ const requestId = require('./middleware/requestId');
 const healthRouter = require('./routes/health');
 const keysRouter = require('./routes/keys');
 const proxyRouter = require('./routes/proxy');
+const analyticsRouter = require('./routes/analytics');
 
 const app = express();
 
@@ -14,5 +15,6 @@ app.use(express.json());
 app.use(healthRouter);
 app.use(keysRouter);
 app.use(proxyRouter);
+app.use(analyticsRouter);
 
 module.exports = app;
