@@ -25,22 +25,20 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                // Preflight: prove what the workspace actually contains (shows in the build log).
-                sh "git -C ${WORKSPACE} rev-parse HEAD"
-                sh "ls -la ${WORKSPACE}/scripts/"
+                // Build a throwaway test image (source is COPY'd in at build time, streamed to the
+                // daemon as a tar context) instead of bind-mounting the workspace — bind mounts
+                // resolve host-side under Docker-outside-of-Docker, which produced an empty /app.
+                sh "docker build -f Dockerfile.test -t test-image-${BUILD_NUMBER} ."
                 sh "docker network create test-net-${BUILD_NUMBER}"
                 sh "docker run -d --name test-redis-${BUILD_NUMBER} --network test-net-${BUILD_NUMBER} redis:7-alpine"
                 sh "sleep 2"
-                // TEMP diagnostic (Phase 1): prove/disprove the DooD bind-mount path-mismatch hypothesis.
-                sh "docker run --rm -v ${WORKSPACE}:/app -w /app node:18 ls -la /app"
-                // Feed the test script to the container via stdin (redirect resolved agent-side),
-                // so the run does not depend on the container seeing the bind-mounted script path.
-                sh "docker run --rm -i --network test-net-${BUILD_NUMBER} --user \$(id -u):\$(id -g) -e HOME=/tmp -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 -v ${WORKSPACE}:/app -w /app node:18 sh -s < ${WORKSPACE}/scripts/ci-test.sh"
+                sh "docker run --rm --network test-net-${BUILD_NUMBER} -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 test-image-${BUILD_NUMBER}"
             }
             post {
                 always {
                     sh "docker rm -f test-redis-${BUILD_NUMBER} || true"
                     sh "docker network rm test-net-${BUILD_NUMBER} || true"
+                    sh "docker rmi test-image-${BUILD_NUMBER} || true"
                 }
             }
         }
