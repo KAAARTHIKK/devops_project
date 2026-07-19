@@ -14,7 +14,13 @@ pipeline {
                     url: 'https://github.com/KAAARTHIKK/devops_project.git'
             }
         }
-        
+
+        stage('Debug Checkout') {
+            steps {
+                sh 'pwd && git rev-parse HEAD && ls -la package-lock.json && cat .gitignore'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 echo '📦 Skipping npm install - will be done in Docker build...'
