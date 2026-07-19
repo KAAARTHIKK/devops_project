@@ -20,6 +20,7 @@
   "homepage": "https://github.com/KAAARTHIKK/devops_project#readme",
   "description": "Task Management REST API - DevOps Project",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1"
   }
 }
