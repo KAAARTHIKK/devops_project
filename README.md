@@ -12,15 +12,6 @@ that earlier version; only the application inside the container changed.
 
 ---
 
-## Team Members
-
-- Darun Kumar M M – Backend Development
-- Akshata Ramgopal – Docker Containerization
-- Karthik Saravanan – Jenkins CI/CD Pipeline
-- Lokesh Kumar G R – AWS EC2 Deployment
-
----
-
 ## Technology Stack
 
 - Runtime: Node.js, Express 5
