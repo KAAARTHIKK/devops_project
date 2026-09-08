@@ -1,11 +1,13 @@
 {
   "name": "devops_project",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit tests/middleware",
+    "test:integration": "jest tests/integration --runInBand"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,15 @@
   "homepage": "https://github.com/KAAARTHIKK/devops_project#readme",
   "description": "Task Management REST API - DevOps Project",
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^5.11.1",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0"
+  },
+  "devDependencies": {
+    "ioredis-mock": "^8.13.1",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
   }
 }

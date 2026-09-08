@@ -14,7 +14,7 @@ pipeline {
                     url: 'https://github.com/KAAARTHIKK/devops_project.git'
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
                 echo '📦 Skipping npm install - will be done in Docker build...'
@@ -25,7 +25,21 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo '🧪 Running tests...'
-                sh 'npm test || echo "No tests configured yet"'
+                // Build a throwaway test image (source is COPY'd in at build time, streamed to the
+                // daemon as a tar context) instead of bind-mounting the workspace — bind mounts
+                // resolve host-side under Docker-outside-of-Docker, which produced an empty /app.
+                sh "docker build -f Dockerfile.test -t test-image-${BUILD_NUMBER} ."
+                sh "docker network create test-net-${BUILD_NUMBER}"
+                sh "docker run -d --name test-redis-${BUILD_NUMBER} --network test-net-${BUILD_NUMBER} redis:7-alpine"
+                sh "sleep 2"
+                sh "docker run --rm --network test-net-${BUILD_NUMBER} -e REDIS_URL=redis://test-redis-${BUILD_NUMBER}:6379 test-image-${BUILD_NUMBER}"
+            }
+            post {
+                always {
+                    sh "docker rm -f test-redis-${BUILD_NUMBER} || true"
+                    sh "docker network rm test-net-${BUILD_NUMBER} || true"
+                    sh "docker rmi test-image-${BUILD_NUMBER} || true"
+                }
             }
         }
         

@@ -1,146 +1,52 @@
-# API Testing Guide
+# Testing Guide
 
-## Quick Start
+## Automated Tests
 
-1. **Start the server:**
 ```bash
-npm start
+npm test                # jest --runInBand — unit + middleware always run;
+                         # integration tests skip gracefully without a REDIS_URL
+npm run test:unit        # unit + middleware only, no Redis required
+npm run test:integration # requires a real Redis (REDIS_URL) — includes the
+                          # rate-limit concurrency ("headline") test
 ```
 
-You should see: `Task Management API running on http://localhost:3000`
+Test layout:
+- `tests/unit/` — `apiKeyService`, `tokenBucket` (Lua script), mocked via `ioredis-mock`
+- `tests/middleware/` — `auth`, `rateLimit`, mocked collaborators
+- `tests/integration/` — real Redis: key lifecycle round-trip, and the concurrency test that
+  proves the token-bucket Lua script is atomic under a concurrent burst
 
----
+See [`docs/08_TESTING.md`](docs/08_TESTING.md) for the full test plan and rationale.
 
-## Test Scenarios
+## Manual Smoke Test
 
-### Scenario 1: Create Tasks
-
-**Request:**
 ```bash
-curl -X POST http://localhost:3000/tasks -H "Content-Type: application/json" -d "{\"title\":\"Complete DevOps Project\"}"
+docker compose up --build   # app + redis
+curl -s localhost:3000/health           # {"status":"ok",...}
+curl -s localhost:3000/health/ready     # {"status":"ready","redis":"up"}
+
+# issue a key
+KEY=$(curl -s -X POST localhost:3000/admin/keys \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"name":"smoke","rateLimit":{"capacity":5,"refillPerSec":1}}' | jq -r .apiKey)
+
+# call a protected route
+curl -s localhost:3000/v1/ping -H "x-api-key: $KEY"       # {"message":"pong",...}
+
+# check analytics
+curl -s localhost:3000/admin/analytics/<key-id> -H "Authorization: Bearer $ADMIN_TOKEN"
 ```
 
-**Expected Response:**
-```json
-{
-  "id": 1,
-  "title": "Complete DevOps Project",
-  "completed": false
-}
-```
+### Error Cases to Check Manually
 
----
+| Request | Expected |
+|---------|----------|
+| `GET /v1/ping` with no `x-api-key` | `401 MISSING_API_KEY` |
+| `GET /v1/ping` with a bogus key | `401 INVALID_API_KEY` |
+| `GET /v1/ping` with a revoked key | `403 KEY_REVOKED` |
+| Requests beyond a key's `capacity` | `429 RATE_LIMITED` + `Retry-After` header |
+| Admin routes with a wrong/missing bearer token | `401 UNAUTHORIZED` |
+| `GET /admin/keys/:id` for an unknown id | `404 KEY_NOT_FOUND` |
 
-### Scenario 2: View All Tasks
-
-**Request:**
-```bash
-curl http://localhost:3000/tasks
-```
-
-**Expected Response:**
-```json
-[
-  {
-    "id": 1,
-    "title": "Complete DevOps Project",
-    "completed": false
-  }
-]
-```
-
----
-
-### Scenario 3: Update Task
-
-**Request:**
-```bash
-curl -X PUT http://localhost:3000/tasks/1 -H "Content-Type: application/json" -d "{\"completed\":true}"
-```
-
-**Expected Response:**
-```json
-{
-  "id": 1,
-  "title": "Complete DevOps Project",
-  "completed": true
-}
-```
-
----
-
-### Scenario 4: Delete Task
-
-**Request:**
-```bash
-curl -X DELETE http://localhost:3000/tasks/1
-```
-
-**Expected Response:**
-```json
-{
-  "message": "Task deleted successfully"
-}
-```
-
----
-
-## Postman Collection
-
-### Setup
-1. Open Postman
-2. Create new Collection: "Task Management API"
-3. Add requests as shown below
-
-### Request 1: Create Task
-- **Method:** POST
-- **URL:** `http://localhost:3000/tasks`
-- **Headers:** `Content-Type: application/json`
-- **Body (raw JSON):**
-```json
-{
-  "title": "Learn Docker"
-}
-```
-
-### Request 2: Get All Tasks
-- **Method:** GET
-- **URL:** `http://localhost:3000/tasks`
-
-### Request 3: Update Task
-- **Method:** PUT
-- **URL:** `http://localhost:3000/tasks/1`
-- **Headers:** `Content-Type: application/json`
-- **Body (raw JSON):**
-```json
-{
-  "title": "Learn Docker and Kubernetes",
-  "completed": true
-}
-```
-
-### Request 4: Delete Task
-- **Method:** DELETE
-- **URL:** `http://localhost:3000/tasks/1`
-
----
-
-## Error Testing
-
-### Test 1: Create task without title
-```bash
-curl -X POST http://localhost:3000/tasks -H "Content-Type: application/json" -d "{}"
-```
-**Expected:** `400 Bad Request` with error message
-
-### Test 2: Update non-existent task
-```bash
-curl -X PUT http://localhost:3000/tasks/999 -H "Content-Type: application/json" -d "{\"completed\":true}"
-```
-**Expected:** `404 Not Found` with error message
-
-### Test 3: Delete non-existent task
-```bash
-curl -X DELETE http://localhost:3000/tasks/999
-```
-**Expected:** `404 Not Found` with error message
+Full endpoint contract: [`docs/04_API_DESIGN.md`](docs/04_API_DESIGN.md).
+Setup and troubleshooting: [`application/README.md`](application/README.md).
